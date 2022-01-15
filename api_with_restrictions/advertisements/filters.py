@@ -1,12 +1,13 @@
-from django_filters import rest_framework as filters
+from django_filters import FilterSet, filters
 
 from advertisements.models import Advertisement, AdvertisementStatusChoices
 
 
-class AdvertisementFilter(filters.FilterSet):
+class AdvertisementFilter(FilterSet):
     """Фильтры для объявлений."""
 
-    status = filters.ModelChoiceFilter(queryset=AdvertisementStatusChoices.choices)
+    #status = filters.ChoiceFilter(choices=AdvertisementStatusChoices, null_value=None)
+    status = filters.CharFilter()
     created_at = filters.DateFromToRangeFilter()
 
     class Meta:
