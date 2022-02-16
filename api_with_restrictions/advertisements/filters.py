@@ -6,7 +6,6 @@ from advertisements.models import Advertisement, AdvertisementStatusChoices
 class AdvertisementFilter(FilterSet):
     """Фильтры для объявлений."""
 
-    #status = filters.ChoiceFilter(choices=AdvertisementStatusChoices, null_value=None)
     status = filters.CharFilter()
     created_at = filters.DateFromToRangeFilter()
 

@@ -27,7 +27,6 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'creator',
                   'status', 'created_at', 'updated_at',
                   ]
-        read_only_fields = ['creator', ]
 
     def create(self, validated_data):
         """Метод для создания"""
@@ -41,13 +40,21 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         validated_data["creator"] = self.context["request"].user
         return super().create(validated_data)
 
+    def update(self, instance, validated_data):
+        validated_data["creator"] = self.context["request"].user
+        return super().update(instance, validated_data)
+
     def validate(self, data):
         """Метод для валидации. Вызывается при создании и обновлении."""
 
         if data["creator"] != self.context["request"].user:
             return
         # TODO: добавьте требуемую валидацию
-        if Advertisement.objects.filter(creator=data["creator"], status="OPEN").count() >= 10:
+        adv_open = Advertisement.objects.filter(creator=data["creator"], status="OPEN").count()
+        if self.context("request").method == 'POST' and adv_open >= 10:
+            raise serializers.ValidationError('Exceed max advertisement count with status = OPEN')
+
+        if self.context("request").method == 'PATCH' and adv_open >= 10 and data('status') == 'OPEN':
             raise serializers.ValidationError('Exceed max advertisement count with status = OPEN')
 
         return data
