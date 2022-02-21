@@ -49,10 +49,10 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
         # TODO: добавьте требуемую валидацию
         adv_open = Advertisement.objects.filter(creator=self.context["request"].user, status="OPEN").count()
-        if self.request.method == 'POST' and adv_open >= 10:
+        if self.context["request"].method == 'POST' and adv_open >= 10:
             raise serializers.ValidationError('Exceed max advertisement count with status = OPEN')
 
-        if self.request.method == 'PATCH' and adv_open >= 10 and data.get('status') == 'OPEN':
+        if self.context["request"].method == 'PATCH' and adv_open >= 10 and data.get('status') == 'OPEN':
             raise serializers.ValidationError('Exceed max advertisement count with status = OPEN')
 
         return data
